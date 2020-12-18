@@ -1,19 +1,18 @@
-const fs = require('fs');
+// const fs = require('fs');
 
-fs.open('./img.jpg', err => {
-  if (err) throw err;
-  console.log("successfully opened img.jpg");
+// fs.open('./img.jpg', err => {
+//   if (err) throw err;
+//   console.log("successfully opened img.jpg");
 
-  fs.close(1, err => {
-    if (err) throw err;
-    console.log("successfully closed img.jpg");
-  })
-});
+//   fs.close(1, err => {
+//     if (err) throw err;
+//     console.log("successfully closed img.jpg");
+//   })
+// });
 
-const greetModule = require('./build/Release/greet.node');
+const faceDetector = require('./build/Release/faces.node');
 
-console.log('exports: ', greetModule);
-console.log();
+faceDetector.faces();
 
-console.log('greetModule.greetHello(): ', greetModule.greetHello());
-console.log();
+
+

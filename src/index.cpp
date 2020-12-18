@@ -1,22 +1,21 @@
 #include <napi.h>
-#include <string>
-#include "greeting.h"
+#include "detector.h"
 
-Napi::String greetHello(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
+using namespace Napi;  
+using namespace std;
 
-  std::string result = helloUser( "DIMA" );
+Number detectFacesWrapped(const CallbackInfo& info) 
+{
+  Env env = info.Env();
 
-  return Napi::String::New(env, result);
+  return Number::New(env, detectFaces());
 }
 
-Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set(
-    Napi::String::New(env, "greetHello"),
-    Napi::Function::New(env, greetHello)
-  );
+Object Init(Env env, Object exports) 
+{
+  exports.Set("faces", Function::New(env, detectFacesWrapped));
 
   return exports;
 }
 
-NODE_API_MODULE(greet, Init)
+NODE_API_MODULE(faces, Init)
