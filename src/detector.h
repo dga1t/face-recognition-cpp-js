@@ -1,5 +1,8 @@
-#include <string>
+#ifndef DETECT_FACES
+#define DETECT_FACES
 
-using namespace std;
+#include <nan.h>
 
-int detectFaces();
+NAN_METHOD(detectFaces);
+
+#endif

@@ -12,7 +12,7 @@
 
 const faceDetector = require('./build/Release/faces.node');
 
-faceDetector.faces();
+faceDetector.detectFaces();
 
 
 

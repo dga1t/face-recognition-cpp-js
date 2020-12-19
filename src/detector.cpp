@@ -3,11 +3,12 @@
 #include <opencv2/imgproc.hpp>
 #include <iostream>
 #include "detector.h"
+#include <nan.h>
 
 using namespace std;
 using namespace cv;
 
-int detectFaces() 
+NAN_METHOD(detectFaces) 
 {
   Mat image;
   image = imread("../img.jpg", IMREAD_COLOR);  
@@ -20,7 +21,6 @@ int detectFaces()
   if (face_cascade.empty())
   {
     cerr << "Error Loading XML file" << endl;
-    return 1;
   }
  
   // Detect faces
@@ -36,6 +36,4 @@ int detectFaces()
     
   imshow( "Detected Faces", image ); 
   waitKey(0);
-
-  return 0;
 }

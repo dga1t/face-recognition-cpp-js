@@ -1,21 +1,14 @@
-#include <napi.h>
+#include <nan.h>
 #include "detector.h"
 
-using namespace Napi;  
-using namespace std;
+using v8::FunctionTemplate;
+using Nan::GetFunction;
+using Nan::New;
+using Nan::Set;
 
-Number detectFacesWrapped(const CallbackInfo& info) 
-{
-  Env env = info.Env();
-
-  return Number::New(env, detectFaces());
+NAN_MODULE_INIT(InitAll) {
+  Set(target, New("detectFaces").ToLocalChecked(),
+    GetFunction(New<FunctionTemplate>(detectFaces)).ToLocalChecked());
 }
 
-Object Init(Env env, Object exports) 
-{
-  exports.Set("faces", Function::New(env, detectFacesWrapped));
-
-  return exports;
-}
-
-NODE_API_MODULE(faces, Init)
+NODE_MODULE(faces, InitAll)
