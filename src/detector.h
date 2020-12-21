@@ -1,5 +1,5 @@
-#ifndef DETECT_FACES
-#define DETECT_FACES
+#ifndef DETECT_FACES_H
+#define DETECT_FACES_H
 
 #include <nan.h>
 

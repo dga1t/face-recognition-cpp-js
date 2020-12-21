@@ -2,16 +2,17 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+#include <cstdio>
 #include "detector.h"
-#include <nan.h>
 
 using namespace std;
 using namespace cv;
+using namespace v8;
 
 NAN_METHOD(detectFaces) 
 {
   Mat image;
-  image = imread("../img.jpg", IMREAD_COLOR);  
+  image = info[0]->IsObject();
   imshow( "window1", image );
 
   // Load Face cascade (.xml file)
@@ -20,7 +21,7 @@ NAN_METHOD(detectFaces)
 
   if (face_cascade.empty())
   {
-    cerr << "Error Loading XML file" << endl;
+    cout << "Error Loading XML file" << endl;
   }
  
   // Detect faces

@@ -1,14 +1,9 @@
 #include <nan.h>
 #include "detector.h"
 
-using v8::FunctionTemplate;
-using Nan::GetFunction;
-using Nan::New;
-using Nan::Set;
-
-NAN_MODULE_INIT(InitAll) {
-  Set(target, New("detectFaces").ToLocalChecked(),
-    GetFunction(New<FunctionTemplate>(detectFaces)).ToLocalChecked());
+NAN_MODULE_INIT(Init) {
+  Nan::Set(target, Nan::New("detectFaces").ToLocalChecked(),
+    Nan::GetFunction(Nan::New<v8::FunctionTemplate>(detectFaces)).ToLocalChecked());
 }
 
-NODE_MODULE(faces, InitAll)
+NODE_MODULE(faces, Init);

@@ -1,18 +1,18 @@
-// const fs = require('fs');
-
-// fs.open('./img.jpg', err => {
-//   if (err) throw err;
-//   console.log("successfully opened img.jpg");
-
-//   fs.close(1, err => {
-//     if (err) throw err;
-//     console.log("successfully closed img.jpg");
-//   })
-// });
-
+const fs = require('fs');
 const faceDetector = require('./build/Release/faces.node');
 
-faceDetector.detectFaces();
+fs.open('./img.jpg', 'r', (err, f) => {
+  if (err) throw err;
+
+  faceDetector.detectFaces(f);
+
+  fs.close(f, err => {
+    if (err) throw err;
+  })
+});
+
+
+
 
 
 
