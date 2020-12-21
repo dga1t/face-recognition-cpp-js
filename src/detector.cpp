@@ -1,6 +1,7 @@
 #include <opencv2/objdetect.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <iostream>
 #include <cstdio>
 #include <napi.h>
@@ -15,15 +16,22 @@ static Napi::Value detectFaces(const Napi::CallbackInfo& info)
     return env.Null();
   }
 
-  // if (!info[0].IsString())
-  // {
-  //   Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
-  //   return env.Null();
-  // }
+  if (!info[0].IsBuffer())
+  {
+    Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
-  std::string arg0 = info[0].As<Napi::String>();
-  cv::Mat img = cv::imread(arg0);
+  Napi::Buffer<uint8_t> buf = info[0].As<Napi::Buffer<uint8_t>>();
+  int bufLength = sizeof(buf);
+  int bufLength2 = sizeof(buf) / sizeof(uint8_t);
+  cv::Mat img = cv::imdecode(cv::Mat(1, bufLength, CV_8U, buf), cv::IMREAD_ANYCOLOR);
 
+  std::cout << bufLength << std::endl;
+  std::cout << bufLength2 << std::endl;
+  std::cout << "size of uint_8: " << sizeof(uint8_t) << std::endl;
+  std::cout << "size of img: " << sizeof(img) << std::endl;
+  
   // Load Face cascade (.xml file)
   cv::CascadeClassifier face_cascade;
   face_cascade.load( "/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml" );
@@ -45,8 +53,14 @@ static Napi::Value detectFaces(const Napi::CallbackInfo& info)
     cv::ellipse( img, center, cv::Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, cv::Scalar( 255, 0, 255 ), 4, 8, 0 );
   }
 
+  // if (img.empty())
+  // {
+  //   Napi::TypeError::New(env, "Error rendering image").ThrowAsJavaScriptException();
+  //   return env.Null();
+  // }
+
   cv::imshow("img", img);
-  cv::waitKey();
+  cv::waitKey(0);
 
   return env.Null();
 }
@@ -58,34 +72,3 @@ static Napi::Object Init(Napi::Env env, Napi::Object exports)
 }
 
 NODE_API_MODULE(faces, Init)
-
-
-// NAN_METHOD() 
-// {
-//   Mat image;
-//   image = info[0]->IsObject();
-//   imshow( "window1", image );
-
-//   // Load Face cascade (.xml file)
-//   CascadeClassifier face_cascade;
-//   face_cascade.load( "/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml" );
-
-//   if (face_cascade.empty())
-//   {
-//     cout << "Error Loading XML file" << endl;
-//   }
- 
-//   // Detect faces
-//   vector<Rect> faces;
-//   face_cascade.detectMultiScale( image, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30) );
-
-//   // Draw circles on the detected faces
-//   for ( size_t i = 0; i < faces.size(); i++ )
-//   {
-//     Point center( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5 );
-//     ellipse( image, center, Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar( 255, 0, 255 ), 4, 8, 0 );
-//   }
-    
-//   imshow( "Detected Faces", image ); 
-//   waitKey(0);
-// }

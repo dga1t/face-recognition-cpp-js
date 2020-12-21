@@ -3,17 +3,17 @@
 const fs = require('fs');
 const faceDetector = require('bindings')('faces');
 
-console.log(faceDetector.detectFaces('img.jpg'));
+// console.log(faceDetector.detectFaces('img.jpg'));
 
-// fs.open('./img.jpg', 'r', (err, f) => {
-//   if (err) throw err;
+fs.readFile('./img.jpg', (err, buf) => {
+  if (err) throw err;
 
-//   faceDetector.detectFaces(f);
+  const base64data = Buffer.from(buf, 'base64');
 
-//   fs.close(f, err => {
-//     if (err) throw err;
-//   })
-// });
+  console.log(base64data);
+
+  faceDetector.detectFaces(base64data);
+});
 
 
 
