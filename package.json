@@ -1,15 +1,13 @@
 {
   "name": "faces",
   "version": "1.0.0",
-  "description": "",
+  "description": "face detection app using opencv",
   "private": "true",
-  "gypfile": "true",
   "main": "index.js",
   "cmake-js": {
     "runtime": "node"
   },
   "scripts": {
-    "build": "node-gyp build",
     "install": "cmake-js compile",
     "start": "node ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,15 +17,15 @@
     "url": "git+https://github.com/dga1t/face-recognition-cpp-js.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dima Pasumansky",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dga1t/face-recognition-cpp-js/issues"
   },
   "homepage": "https://github.com/dga1t/face-recognition-cpp-js#readme",
   "dependencies": {
+    "bindings": "^1.5.0",
     "cmake-js": "^6.1.0",
-    "nan": "^2.14.2",
     "node-addon-api": "^3.1.0"
   }
 }
