@@ -23,14 +23,12 @@ static Napi::Value detectFaces(const Napi::CallbackInfo& info)
   }
 
   Napi::Buffer<uint8_t> buf = info[0].As<Napi::Buffer<uint8_t>>();
-  int bufLength = sizeof(buf);
-  int bufLength2 = sizeof(buf) / sizeof(uint8_t);
-  cv::Mat img = cv::imdecode(cv::Mat(1, bufLength, CV_8U, buf), cv::IMREAD_ANYCOLOR);
+  int bufLength = sizeof(buf) / sizeof(uint8_t);
+  cv::Mat img = cv::imdecode(cv::Mat(1, bufLength, CV_8UC1, buf), cv::IMREAD_UNCHANGED);
 
-  std::cout << bufLength << std::endl;
-  std::cout << bufLength2 << std::endl;
-  std::cout << "size of uint_8: " << sizeof(uint8_t) << std::endl;
-  std::cout << "size of img: " << sizeof(img) << std::endl;
+  // std::cout << bufLength << std::endl;
+  // std::cout << "size of uint8_t: " << sizeof(uint8_t) << std::endl;
+  // std::cout << "size of img: " << sizeof(img) << std::endl;
   
   // Load Face cascade (.xml file)
   cv::CascadeClassifier face_cascade;
@@ -52,12 +50,6 @@ static Napi::Value detectFaces(const Napi::CallbackInfo& info)
     cv::Point center( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5 );
     cv::ellipse( img, center, cv::Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, cv::Scalar( 255, 0, 255 ), 4, 8, 0 );
   }
-
-  // if (img.empty())
-  // {
-  //   Napi::TypeError::New(env, "Error rendering image").ThrowAsJavaScriptException();
-  //   return env.Null();
-  // }
 
   cv::imshow("img", img);
   cv::waitKey(0);

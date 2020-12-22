@@ -5,14 +5,15 @@ const faceDetector = require('bindings')('faces');
 
 // console.log(faceDetector.detectFaces('img.jpg'));
 
-fs.readFile('./img.jpg', (err, buf) => {
+fs.readFile('./img.jpg', (err, data) => {
   if (err) throw err;
 
-  const base64data = Buffer.from(buf, 'base64');
+  const buffer = Buffer.from(data);
 
-  console.log(base64data);
+  console.log(buffer);
+  console.log(Buffer.byteLength(buffer));
 
-  faceDetector.detectFaces(base64data);
+  faceDetector.detectFaces(buffer);
 });
 
 
