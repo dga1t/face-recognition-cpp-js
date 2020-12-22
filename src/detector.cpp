@@ -22,17 +22,27 @@ static Napi::Value detectFaces(const Napi::CallbackInfo& info)
     return env.Null();
   }
 
-  Napi::Buffer<uint8_t> buf = info[0].As<Napi::Buffer<uint8_t>>();
-  int bufLength = sizeof(buf) / sizeof(uint8_t);
-  cv::Mat img = cv::imdecode(cv::Mat(1, bufLength, CV_8UC1, buf), cv::IMREAD_UNCHANGED);
+  Napi::ArrayBuffer buf = info[0].As<Napi::ArrayBuffer>();
+  long bufLength = info[1].As<Napi::Number>();
+  std::string path2cascades = info[2].As<Napi::String>();
 
-  // std::cout << bufLength << std::endl;
-  // std::cout << "size of uint8_t: " << sizeof(uint8_t) << std::endl;
-  // std::cout << "size of img: " << sizeof(img) << std::endl;
-  
+  // std::vector<int> buff(bufLength);
+  // int * buffer = &buf; 
+
+  cv::Mat rawData(1, bufLength, CV_8UC1, buf);
+  cv::Mat decodedImg = cv::imdecode(rawData, cv::IMREAD_COLOR);
+ 
+  // cv::Mat decodedImg = cv::imdecode(cv::Mat(1, bufLength, CV_8UC1, buf), cv::IMREAD_COLOR);
+
+  // std::cout << "rawData: " << rawData << std::endl;
+  std::cout << "length of buffer in bytes: " << bufLength << std::endl;
+  std::cout << "buf: " << buf << std::endl;
+  std::cout << "size of decodedImg in bytes : " << sizeof(decodedImg) << std::endl;
+  std::cout << decodedImg << std::endl;
+
   // Load Face cascade (.xml file)
   cv::CascadeClassifier face_cascade;
-  face_cascade.load( "/usr/local/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml" );
+  face_cascade.load( path2cascades );
 
   if (face_cascade.empty())
   {
@@ -42,16 +52,16 @@ static Napi::Value detectFaces(const Napi::CallbackInfo& info)
 
   // Detect faces
   std::vector<cv::Rect> faces;
-  face_cascade.detectMultiScale( img, faces, 1.1, 2, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30) );
+  face_cascade.detectMultiScale( decodedImg, faces, 1.1, 2, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30) );
 
   // Draw circles on the detected faces
   for ( size_t i = 0; i < faces.size(); i++ )
   {
     cv::Point center( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5 );
-    cv::ellipse( img, center, cv::Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, cv::Scalar( 255, 0, 255 ), 4, 8, 0 );
+    cv::ellipse( decodedImg, center, cv::Size( faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, cv::Scalar( 255, 0, 255 ), 4, 8, 0 );
   }
 
-  cv::imshow("img", img);
+  cv::imshow("img", decodedImg);
   cv::waitKey(0);
 
   return env.Null();
