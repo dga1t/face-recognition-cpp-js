@@ -3,44 +3,36 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <iostream>
-#include <cstdio>
+#include <vector>
+#include <stdio.h>
 #include <napi.h>
 
 static Napi::Value detectFaces(const Napi::CallbackInfo& info)
 {
   Napi::Env env = info.Env();
 
-  if (info.Length() < 1)
+  if (info.Length() < 3)
   {
     Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-
-  if (!info[0].IsBuffer())
-  {
-    Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
     return env.Null();
   }
 
   Napi::ArrayBuffer buf = info[0].As<Napi::ArrayBuffer>();
   long bufLength = info[1].As<Napi::Number>();
   std::string path2cascades = info[2].As<Napi::String>();
+  
+  cv::Mat rawData(1, bufLength, CV_8UC1, buf.Data());
+  cv::Mat decodedImg = cv::imdecode(rawData, cv::IMREAD_UNCHANGED);
 
-  // std::vector<int> buff(bufLength);
-  // int * buffer = &buf; 
+  // cv::Mat decodedImg = cv::imdecode(cv::Mat(1, bufLength, CV_8UC1, buf.Data()), cv::IMREAD_UNCHANGED);
 
-  cv::Mat rawData(1, bufLength, CV_8UC1, buf);
-  cv::Mat decodedImg = cv::imdecode(rawData, cv::IMREAD_COLOR);
+  if ( decodedImg.data == NULL )   
+  {
+    Napi::TypeError::New(env, "Error reading raw image data").ThrowAsJavaScriptException();
+    return env.Null();
+  }
  
-  // cv::Mat decodedImg = cv::imdecode(cv::Mat(1, bufLength, CV_8UC1, buf), cv::IMREAD_COLOR);
-
-  // std::cout << "rawData: " << rawData << std::endl;
-  std::cout << "length of buffer in bytes: " << bufLength << std::endl;
-  std::cout << "buf: " << buf << std::endl;
-  std::cout << "size of decodedImg in bytes : " << sizeof(decodedImg) << std::endl;
-  std::cout << decodedImg << std::endl;
-
-  // Load Face cascade (.xml file)
+  // --- Load Face cascade (.xml file) ---
   cv::CascadeClassifier face_cascade;
   face_cascade.load( path2cascades );
 
@@ -50,11 +42,11 @@ static Napi::Value detectFaces(const Napi::CallbackInfo& info)
     return env.Null();
   }
 
-  // Detect faces
+  // --- Detect faces ---
   std::vector<cv::Rect> faces;
   face_cascade.detectMultiScale( decodedImg, faces, 1.1, 2, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30) );
 
-  // Draw circles on the detected faces
+  // --- Draw circles on the detected faces ---
   for ( size_t i = 0; i < faces.size(); i++ )
   {
     cv::Point center( faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5 );
